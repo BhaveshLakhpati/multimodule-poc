@@ -18,6 +18,11 @@ public class ProfileController {
 
     @GetMapping(path = "/ping")
     public ResponseEntity<?> getPing() {
+        return ResponseEntity.ok("Profile Ok.");
+    }
+
+    @GetMapping(path = "/ping-report")
+    public ResponseEntity<?> getReportPing() {
         String reportPingResponse = this.reportClient
                 .getPingResponse()
                 .getBody();
