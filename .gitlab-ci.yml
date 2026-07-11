@@ -62,10 +62,10 @@ build-report-service:
 # ==========================================
 # TEST STAGE
 # ==========================================
-test:
+test-profile-service:
   stage: test
   script:
-    - ./gradlew test jacocoTestReport jacocoTestCoverageVerification
+    - ./gradlew :profile-service:test :profile-service:jacocoTestReport :profile-service:jacocoTestCoverageVerification
   artifacts:
     when: always
     paths:
@@ -77,16 +77,31 @@ test:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
         - "profile-service/**/*"
+
+test-report-service:
+  stage: test
+  script:
+    - ./gradlew :report-service:test :report-service:jacocoTestReport :report-service:jacocoTestCoverageVerification
+  artifacts:
+    when: always
+    paths:
+      - "**/build/reports/jacoco"
+      - "**/build/test-results"
+    reports:
+      junit: "**/build/test-results/test/TEST-*.xml"
+  rules:
+    - if: $CI_PIPRLINE_SOURCE == "merge_request_event"
+      changes:
         - "report-service/**/*"
 
 # ==========================================
 # SONAR STAGE
 # ==========================================
-sonarqube-check:
+profile-sonarqube-check:
   stage: sonar
   script:
     # Native Sonar plugin execution using pipeline-defined environment variables
-    - ./gradlew sonar -Dsonar.qualitygate.wait=true -Dsonar.projectKey=researchportal-backend -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.token="$SONAR_TOKEN"
+    - ./gradlew :profile-service:sonar -Dsonar.qualitygate.wait=true -Dsonar.projectKey=researchportal-backend -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.token="$SONAR_TOKEN"
   dependencies:
     - test
   allow_failure: false
@@ -94,4 +109,16 @@ sonarqube-check:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
         - "profile-service/**/*"
+
+reports-sonarqube-check:
+  stage: sonar
+  script:
+    # Native Sonar plugin execution using pipeline-defined environment variables
+    - ./gradlew :report-service:sonar -Dsonar.qualitygate.wait=true -Dsonar.projectKey=researchportal-backend -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.token="$SONAR_TOKEN"
+  dependencies:
+    - test
+  allow_failure: false
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
         - "report-service/**/*"
