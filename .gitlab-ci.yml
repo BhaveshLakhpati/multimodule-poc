@@ -103,7 +103,7 @@ profile-sonarqube-check:
     # Native Sonar plugin execution using pipeline-defined environment variables
     - ./gradlew :profile-service:sonar -Dsonar.qualitygate.wait=true -Dsonar.projectKey=researchportal-backend -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.token="$SONAR_TOKEN"
   dependencies:
-    - test
+    - test-profile-service
   allow_failure: false
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -116,7 +116,7 @@ reports-sonarqube-check:
     # Native Sonar plugin execution using pipeline-defined environment variables
     - ./gradlew :report-service:sonar -Dsonar.qualitygate.wait=true -Dsonar.projectKey=researchportal-backend -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.token="$SONAR_TOKEN"
   dependencies:
-    - test
+    - test-report-service
   allow_failure: false
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
