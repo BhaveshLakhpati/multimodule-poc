@@ -1,0 +1,169 @@
+# =========================
+
+# 🧱 Build outputs
+
+# =========================
+
+build/
+.gradle/
+out/
+target/
+
+# =========================
+
+# 📦 Logs
+
+# =========================
+
+logs/
+*.log
+
+# =========================
+
+# 🔐 Environment & secrets
+
+# =========================
+
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.jks
+*.keystore
+secrets/
+config/*.yml
+config/*.yaml
+config/*.properties
+
+# =========================
+
+# 🧠 IntelliJ IDEA
+
+# =========================
+
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# =========================
+
+# 🧠 VS Code
+
+# =========================
+
+.vscode/
+
+# =========================
+
+# 🐧 OS files
+
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+
+# 🐳 Docker
+
+# =========================
+
+docker-compose.override.yml
+
+# =========================
+
+# ☕ Java
+
+# =========================
+
+*.class
+*.jar
+*.war
+*.ear
+
+# =========================
+
+# 📊 Test / Coverage
+
+# =========================
+
+coverage/
+jacoco.exec
+*.exec
+
+# =========================
+
+# 🧪 Test output
+
+# =========================
+
+test-output/
+surefire-reports/
+
+# =========================
+
+# 🛠️ Gradle Wrapper (KEEP these)
+
+# =========================
+
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
+
+# =========================
+
+# 📂 Temporary files
+
+# =========================
+
+*.tmp
+*.swp
+*.bak
+*.orig
+
+# =========================
+
+# 🗄️ Database (local dev)
+
+# =========================
+
+*.db
+*.sqlite
+
+# =========================
+
+# 📁 Node (if frontend inside repo)
+
+# =========================
+
+node_modules/
+dist/
+npm-debug.log*
+yarn-error.log*
+
+# =========================
+
+# 🧾 Spring Boot specific
+
+# =========================
+
+spring.log
+application-local.yml
+application-dev.yml
+application-test.yml
+bootstrap.yml
+
+# =========================
+
+# ☁️ Misc
+
+# =========================
+
+*.lock
+
+# FUSE temporary files
+
+**/.fuse_hidden*

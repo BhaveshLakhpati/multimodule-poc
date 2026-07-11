@@ -1,0 +1,34 @@
+{
+  "timestamp": {
+    "$resolver": "timestamp",
+    "pattern": {
+      "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+      "timeZone": "UTC"
+    }
+  },
+  "level": {
+    "$resolver": "level",
+    "field": "name"
+  },
+  "message": {
+    "$resolver": "message",
+    "stringified": true
+  },
+  "logger": {
+    "$resolver": "logger",
+    "field": "name"
+  },
+  "exception": {
+    "$resolver": "exception",
+    "field": "stackTrace",
+    "stringified": true
+  },
+  "trace_id": {
+    "$resolver": "mdc",
+    "key": "traceId"
+  },
+  "span_id": {
+    "$resolver": "mdc",
+    "key": "spanId"
+  }
+}

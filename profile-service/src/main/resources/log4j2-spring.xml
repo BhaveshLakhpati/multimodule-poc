@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="LOG_DIR">${spring:logging.file.path}</Property>
+        <Property name="LOG_FILE_NAME">${spring:spring.application.name}</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="ConsoleJSONAppender" target="SYSTEM_OUT">
+            <JsonTemplateLayout eventTemplateUri="classpath:LokiLayout.json"/>
+        </Console>
+
+        <RollingFile name="RollingFileJSONAppender"
+                     fileName="${LOG_DIR}/${LOG_FILE_NAME}.log"
+                     filePattern="${LOG_DIR}/${LOG_FILE_NAME}-%d{yyyy-MM-dd}-%i.log.gz">
+
+            <JsonTemplateLayout eventTemplateUri="classpath:LokiLayout.json"/>
+
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+
+            <DefaultRolloverStrategy max="20">
+                <Delete basePath="${LOG_DIR}" maxDepth="1">
+                    <IfFileName glob="${LOG_FILE_NAME}-*.log.gz"/>
+                    <IfLastModified age="30d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="co.ambit.ie.researchportal" level="info" additivity="false">
+            <AppenderRef ref="ConsoleJSONAppender"/>
+            <AppenderRef ref="RollingFileJSONAppender"/>
+        </Logger>
+
+        <Root level="info">
+            <AppenderRef ref="ConsoleJSONAppender"/>
+            <AppenderRef ref="RollingFileJSONAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>

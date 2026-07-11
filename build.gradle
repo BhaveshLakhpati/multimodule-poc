@@ -1,0 +1,136 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '4.1.0'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.sonarqube' version '7.3.1.8318'
+}
+
+group = 'co.ambit.ie.researchportal'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+// 1. Define your exclusions list in one place
+def jacocoExclusions = [
+        '**/config/**',
+        '**/dto/**',
+        '**/entity/**',
+        '**/Application*',
+        'co/ambit/ie/researchportal/profileservice/ProfileServiceApplication*'
+]
+
+dependencies {
+    implementation(platform("io.github.openfeign:feign-bom:13.13"))
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'jacoco'
+
+    group = rootProject.group
+    version = rootProject.version
+
+    configurations {
+        configureEach {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        }
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+
+    jacoco {
+        toolVersion = "0.8.11"
+    }
+
+    jacocoTestReport {
+        dependsOn test
+
+        reports {
+            xml.required = true
+            html.required = true
+            csv.required = false
+        }
+
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, exclude: jacocoExclusions)
+                })
+        )
+    }
+
+    jacocoTestCoverageVerification {
+        dependsOn(jacocoTestReport) // Ensure the report runs first
+
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.60 // 60% coverage
+                }
+            }
+        }
+
+        // Crucial: You MUST apply the exact same exclusions to the verification task
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExclusions)
+        }))
+    }
+
+    ext {
+        springBootVersion = '4.1.0'
+        springCloudVersion = '2025.1.2'
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
+
+    check.dependsOn(jacocoTestCoverageVerification)
+
+    dependencies {
+        implementation('org.springframework.boot:spring-boot-starter') {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        }
+        implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        implementation 'org.springframework.boot:spring-boot-starter-opentelemetry'
+        implementation 'io.micrometer:micrometer-tracing:1.7.0'
+        implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+        implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+        implementation 'org.springframework.boot:spring-boot-starter-validation'
+        implementation 'io.micrometer:context-propagation:1.2.1'
+        implementation 'io.micrometer:micrometer-tracing:1.7.0'
+        implementation 'io.github.openfeign:feign-micrometer'
+        compileOnly 'org.projectlombok:lombok'
+        runtimeOnly 'org.apache.logging.log4j:log4j-layout-template-json:2.26.1'
+        annotationProcessor 'org.projectlombok:lombok'
+        testImplementation 'org.springframework.boot:spring-boot-starter-actuator-test'
+        testImplementation 'org.springframework.boot:spring-boot-starter-opentelemetry-test'
+        testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+        testCompileOnly 'org.projectlombok:lombok'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+        testAnnotationProcessor 'org.projectlombok:lombok'
+    }
+
+    test {
+        useJUnitPlatform()
+        finalizedBy(jacocoTestReport)
+    }
+}

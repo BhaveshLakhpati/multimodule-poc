@@ -1,0 +1,97 @@
+stages:
+  - build
+  - test
+  - sonar
+
+# 🛠️ Centralized Workflow Controls
+# Resolves the GraphQL pipeline: null issue by explicitly managing trigger conditions.
+workflow:
+  rules:
+    # 1. Always run a pipeline when a Merge Request is created/updated
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+    # 2. Run a pipeline on the main branch only after an MR is merged
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+    # 3. Block regular branch pushes from creating empty, dangling pipelines
+    - when: never
+
+variables:
+  # Optimize Gradle memory footprint and suppress noisy interactive logs
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.welcome=NEVER -Dorg.gradle.parallel=true -Dorg.gradle.caching=true"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - .gradle/caches/
+    - .gradle/wrapper/
+
+default:
+  # Using standard Gradle official image with JDK 21
+  image: gradle:9.5.1-jdk21
+  tags:
+    - docker
+    - java
+  before_script:
+    # Ensure the Gradle wrapper is executable across environments
+    - chmod +x ./gradlew
+
+# ==========================================
+# BUILD STAGE
+# ==========================================
+build-profile-service:
+  stage: build
+  script:
+    - ./gradlew :profile-service:clean :profile-service:build
+  allow_failure: false
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "profile-service/**/*"
+
+build-report-service:
+  stage: build
+  script:
+    - ./gradlew :report-service:clean :report-service:build
+  allow_failure: false
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "report-service/**/*"
+
+# ==========================================
+# TEST STAGE
+# ==========================================
+test:
+  stage: test
+  script:
+    - ./gradlew test jacocoTestReport jacocoTestCoverageVerification
+  artifacts:
+    when: always
+    paths:
+      - "**/build/reports/jacoco/"
+      - "**/build/test-results/"
+    reports:
+      junit: "**/build/test-results/test/TEST-*.xml"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "profile-service/**/*"
+        - "report-service/**/*"
+
+# ==========================================
+# SONAR STAGE
+# ==========================================
+sonarqube-check:
+  stage: sonar
+  script:
+    # Native Sonar plugin execution using pipeline-defined environment variables
+    - ./gradlew sonar -Dsonar.qualitygate.wait=true -Dsonar.projectKey=researchportal-backend -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.token="$SONAR_TOKEN"
+  dependencies:
+    - test
+  allow_failure: false
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "profile-service/**/*"
+        - "report-service/**/*"
