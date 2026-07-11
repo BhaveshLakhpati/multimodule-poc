@@ -17,12 +17,12 @@ public class ProfileController {
     private final ReportFeignClient reportClient;
 
     @GetMapping(path = "/ping")
-    public ResponseEntity<?> getPing() {
+    public ResponseEntity<String> getPing() {
         return ResponseEntity.ok("Profile Ok.");
     }
 
     @GetMapping(path = "/ping-report")
-    public ResponseEntity<?> getReportPing() {
+    public ResponseEntity<String> getReportPing() {
         String reportPingResponse = this.reportClient
                 .getPingResponse()
                 .getBody();
@@ -31,7 +31,7 @@ public class ProfileController {
     }
 
     @GetMapping(path = "/whoami")
-    public ResponseEntity<?> getWhoAmI(@AuthenticationPrincipal Object object) {
+    public ResponseEntity<Object> getWhoAmI(@AuthenticationPrincipal Object object) {
         log.info("auth: {}", object);
 
         return ResponseEntity.ok(object);
