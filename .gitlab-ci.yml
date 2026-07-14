@@ -90,7 +90,7 @@ test-report-service:
     reports:
       junit: "**/build/test-results/test/TEST-*.xml"
   rules:
-    - if: $CI_PIPRLINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
         - "report-service/**/*"
 
@@ -101,7 +101,7 @@ profile-sonarqube-check:
   stage: sonar
   script:
     # Native Sonar plugin execution using pipeline-defined environment variables
-    - ./gradlew :profile-service:sonar -Dsonar.qualitygate.wait=true -Dsonar.projectKey=researchportal-service -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.token="$SONAR_TOKEN"
+    - ./gradlew :profile-service:clean :profile-service:compileJava :profile-service:test :profile-service:sonar -Dsonar.qualitygate.wait=true -Dsonar.projectKey=researchportal-service -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.token="$SONAR_TOKEN"
   dependencies:
     - test-profile-service
   allow_failure: false
@@ -114,7 +114,7 @@ reports-sonarqube-check:
   stage: sonar
   script:
     # Native Sonar plugin execution using pipeline-defined environment variables
-    - ./gradlew :report-service:sonar -Dsonar.qualitygate.wait=true -Dsonar.projectKey=researchportal-service -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.token="$SONAR_TOKEN"
+    - ./gradlew :report-service:clean :report-service:compileJava :report-service:test :report-service:sonar -Dsonar.qualitygate.wait=true -Dsonar.projectKey=researchportal-service -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.token="$SONAR_TOKEN"
   dependencies:
     - test-report-service
   allow_failure: false
