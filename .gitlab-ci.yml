@@ -3,10 +3,6 @@ stages:
   - test
   - sonar
 
-variables:
-  # Optimize Gradle memory footprint and suppress noisy interactive logs
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.welcome=NEVER -Dorg.gradle.parallel=true -Dorg.gradle.caching=true -Dsonar.coverage.exclusions=**/*Application.java,**/config/**,**/dto/**,**/entity/**"
-
 cache:
   key: "$CI_COMMIT_REF_SLUG"
   paths:
