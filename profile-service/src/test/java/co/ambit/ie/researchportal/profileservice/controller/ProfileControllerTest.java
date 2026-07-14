@@ -25,7 +25,7 @@ class ProfileControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldReturnProfileOkWhenPinged() throws Exception {
+    void shouldReturn_ProfileOk_WhenPinged() throws Exception {
         this.mockMvc.perform(get("/v1/profile/ping")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -33,7 +33,7 @@ class ProfileControllerTest {
     }
 
     @Test
-    void shouldReturnReportOkWhenReportPinged() throws Exception {
+    void shouldReturn_ReportOk_WhenReportPinged() throws Exception {
         // 1. Arrange: Stub the external client to return a mock ResponseEntity
         String mockReportResponse = "Report Service Ok.";
         Mockito.when(this.reportFeignClient.getPingResponse())
@@ -46,7 +46,7 @@ class ProfileControllerTest {
     }
 
     @Test
-    void shouldReturnDummyWhenGetWhoAmI() throws Exception {
+    void shouldReturn_Dummy_WhenGetWhoAmI() throws Exception {
         this.mockMvc.perform(get("/v1/profile/whoami")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
