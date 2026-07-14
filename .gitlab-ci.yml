@@ -3,19 +3,6 @@ stages:
   - test
   - sonar
 
-# 🛠️ Centralized Workflow Controls
-# Resolves the GraphQL pipeline: null issue by explicitly managing trigger conditions.
-workflow:
-  rules:
-    # 1. Always run a pipeline when a Merge Request is created/updated
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-
-    # 2. Run a pipeline on the main branch only after an MR is merged
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-
-    # 3. Block regular branch pushes from creating empty, dangling pipelines
-    - when: never
-
 variables:
   # Optimize Gradle memory footprint and suppress noisy interactive logs
   GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.welcome=NEVER -Dorg.gradle.parallel=true -Dorg.gradle.caching=true -Dsonar.coverage.exclusions=**/*Application.java,**/config/**,**/dto/**,**/entity/**"
