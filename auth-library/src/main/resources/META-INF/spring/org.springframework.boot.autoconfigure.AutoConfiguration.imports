@@ -1,1 +1,2 @@
 co.ambit.ie.researchportal.authlibrary.config.SharedSecurityAutoConfiguration
+co.ambit.ie.researchportal.authlibrary.exception.handler.CustomExceptionHandler

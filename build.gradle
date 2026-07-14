@@ -28,16 +28,19 @@ def jacocoExclusions = [
         '**/Application*'
 ]
 
-dependencies {
-    implementation(platform("io.github.openfeign:feign-bom:13.13"))
-}
-
 bootJar {
     enabled = false
 }
 
 jar {
     enabled = false
+}
+
+ext {
+    springBootVersion = '4.1.0'
+    springCloudVersion = '2025.1.2'
+    resilienceVersion = '2.4.0'
+    springAOPVersion = '3.5.16'
 }
 
 subprojects {
@@ -116,11 +119,6 @@ subprojects {
         }))
     }
 
-    ext {
-        springBootVersion = '4.1.0'
-        springCloudVersion = '2025.1.2'
-    }
-
     dependencyManagement {
         imports {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
@@ -144,6 +142,8 @@ subprojects {
         implementation 'io.micrometer:context-propagation:1.2.1'
         implementation 'io.micrometer:micrometer-tracing:1.7.0'
         implementation 'io.github.openfeign:feign-micrometer'
+        implementation "org.springframework.boot:spring-boot-starter-aop:${springAOPVersion}"
+        implementation "io.github.resilience4j:resilience4j-spring-boot4:${resilienceVersion}"
         compileOnly 'org.projectlombok:lombok'
         runtimeOnly 'org.apache.logging.log4j:log4j-layout-template-json:2.26.1'
         annotationProcessor 'org.projectlombok:lombok'

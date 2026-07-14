@@ -26,9 +26,6 @@ jar {
 }
 
 dependencies {
-    // Import Spring Boot BOM natively (Replaces the old dependency management plugin)
-    implementation platform("org.springframework.boot:spring-boot-dependencies:4.1.0")
-
     // Core API dependencies transitively shared with consuming microservices
     api 'org.springframework.boot:spring-boot-starter-web'
     api 'org.springframework.boot:spring-boot-starter-security'

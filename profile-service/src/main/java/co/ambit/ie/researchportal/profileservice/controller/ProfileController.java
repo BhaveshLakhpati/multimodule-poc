@@ -1,6 +1,6 @@
 package co.ambit.ie.researchportal.profileservice.controller;
 
-import co.ambit.ie.researchportal.profileservice.feignclient.ReportFeignClient;
+import co.ambit.ie.researchportal.profileservice.v1.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 public class ProfileController {
-    private final ReportFeignClient reportClient;
+    private final ProfileService profileService;
 
     @GetMapping(path = "/ping")
     public ResponseEntity<String> getPing() {
@@ -23,9 +23,7 @@ public class ProfileController {
 
     @GetMapping(path = "/ping-report")
     public ResponseEntity<String> getReportPing() {
-        String reportPingResponse = this.reportClient
-                .getPingResponse()
-                .getBody();
+        String reportPingResponse = this.profileService.getReportPing();
 
         return ResponseEntity.ok("Profile Ok. " + reportPingResponse);
     }
