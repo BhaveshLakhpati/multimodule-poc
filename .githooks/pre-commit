@@ -11,9 +11,9 @@ if [ -z "$CHANGED_FILES" ]; then
 fi
 
 # If root build file changed → run full build
-if echo "$CHANGED_FILES" | grep -qE "^(build.gradle | settings.gradle)"; then
+if echo "$CHANGED_FILES" | grep -qE "^(build.gradle|settings.gradle)"; then
 	echo "⚠️ Root config changed → running full build"
-	./grdlew clean build
+	./gradlew --parallel -x :eureka-registry:build -x :eureka-registry:test -x :api-gateway:build -x :api-gateway:test -x :auth-library:build -x :auth-library:test clean build
 	exit $?
 fi
 

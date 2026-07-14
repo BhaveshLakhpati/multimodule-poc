@@ -24,12 +24,19 @@ def jacocoExclusions = [
         '**/config/**',
         '**/dto/**',
         '**/entity/**',
-        '**/Application*',
-        'co/ambit/ie/researchportal/profileservice/ProfileServiceApplication*'
+        '**/Application*'
 ]
 
 dependencies {
     implementation(platform("io.github.openfeign:feign-bom:13.13"))
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = false
 }
 
 subprojects {
