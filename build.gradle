@@ -25,18 +25,26 @@ def jacocoExclusions = [
         '**/config/**',
         '**/dto/**',
         '**/entity/**',
-        '**/Application*',
-        'co/ambit/ie/researchportal/profileservice/ProfileServiceApplication*'
+        '**/Application*'
 ]
 
 dependencies {
     implementation(platform("io.github.openfeign:feign-bom:13.13"))
 }
 
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = false
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'jacoco'
+    apply plugin: 'org.sonarqube'
 
     group = rootProject.group
     version = rootProject.version
@@ -50,6 +58,24 @@ subprojects {
     java {
         toolchain {
             languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+
+    def buildDirPath = layout.buildDirectory
+    sonarqube {
+        properties {
+            property "sonar.projectKey", "researchportal-service"
+
+            property "sonar.coverage.exclusions", "**/*Application.java,**/config/**,**/dto/**,**/entity/**"
+
+            property "sonar.java.binaries",
+                    buildDirPath.dir("classes/java/main").get().asFile.absolutePath
+
+            property "sonar.junit.reportPaths",
+                    buildDirPath.dir("test-results/test").get().asFile.absolutePath
+
+            property "sonar.coverage.jacoco.xmlReportPaths",
+                    buildDirPath.dir("reports/jacoco/test/jacocoTestReport.xml").get().asFile.absolutePath
         }
     }
 

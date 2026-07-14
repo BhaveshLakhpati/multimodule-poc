@@ -1,0 +1,49 @@
+#!/bin/bash
+
+echo "🔍 Detecting changed modules..."
+
+# Get staged files
+CHANGED_FILES=$(git diff HEAD --name-only)
+
+if [ -z "$CHANGED_FILES" ]; then
+	echo "✅ No changes detected"
+	exit 0
+fi
+
+# If root build file changed → run full build
+if echo "$CHANGED_FILES" | grep -qE "^(build.gradle|settings.gradle)"; then
+	echo "⚠️ Root config changed → running full build"
+	./gradlew --parallel -x :eureka-registry:build -x :eureka-registry:test -x :api-gateway:build -x :api-gateway:test -x :auth-library:build -x :auth-library:test clean build
+	exit $?
+fi
+
+# Extract modules (top-level folders)
+MODULES=$(echo "$CHANGED_FILES" | cut -d/ -f1 | sort -u)
+
+GRADLE_TASKS=""
+
+for module in $MODULES; do
+	if [ -f "$module/build.gradle" ] || [ -f "$module/build.gradle.kts" ]; then
+		GRADLE_TASKS="$GRADLE_TASKS :$module:clean :$module:test"
+	fi
+done
+
+if [ -z "$GRADLE_TASKS" ]; then
+	echo "⚠️ No Gradle modules changed"
+	exit 0
+fi
+
+echo "🚀 Running tests for: $GRADLE_TASKS"
+
+# Use gradlew.bat explicitly for Windows
+./gradlew --parallel $GRADLE_TASKS
+
+RESULT=$?
+
+if [ $RESULT -ne 0 ]; then
+	echo "❌ Tests failed. Commit blocked."
+	exit $RESULT
+fi
+
+echo "✅ Pre-commit checks passed"
+exit 0

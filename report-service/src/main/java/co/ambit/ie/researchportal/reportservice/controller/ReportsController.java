@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "/v1/reports")
 public class ReportsController {
     @GetMapping(path = "/ping")
-    public ResponseEntity<?> getPing() {
+    public ResponseEntity<String> getPing() {
         return ResponseEntity.ok("Reports Ok");
     }
 }
